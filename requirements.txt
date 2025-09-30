@@ -1,0 +1,20 @@
+# Dependencias principales para el convertidor de voz a voz
+gradio>=4.0.0
+openai-whisper>=20231117
+SpeechRecognition>=3.10.0
+googletrans==4.0.0rc1
+gTTS>=2.4.0
+pyttsx3>=2.90
+pygame>=2.5.0
+numpy>=1.24.0
+torch>=2.0.0
+torchaudio>=2.0.0
+pydub>=0.25.1
+
+# Dependencias adicionales para mejor funcionalidad
+soundfile>=0.12.1
+scipy>=1.11.0
+python-multipart>=0.0.6
+
+# Para manejo de archivos de audio
+librosa>=0.10.0

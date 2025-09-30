@@ -1,0 +1,103 @@
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Entornos virtuales
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Archivos de audio temporales
+*.wav
+*.mp3
+*.tmp
+temp_*.*
+tmp/
+
+# Archivos de log
+*.log
+logs/
+
+# Archivos de configuración de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Archivos del sistema operativo
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Archivos de modelos de ML (si se descargan localmente)
+*.bin
+*.model
+*.pkl
+*.h5
+
+# Archivos de audio generados por la aplicación
+output/
+temp_audio/
+*.m4a
+*.ogg
+
+# Configuraciones personales
+config_local.py
+.env.local
+.secrets
+
+# Archivos de prueba
+test_*.py
+tests/
+.pytest_cache/
+
+# Documentación generada
+docs/_build/
+*.pdf
+
+# Cobertura de pruebas
+.coverage
+htmlcov/
+
+# Archivos de instalación
+*.deb
+*.rpm
+*.dmg
+*.exe
+*.msi
+
+# Archivos de respaldo
+*.bak
+*.backup
+*.old
+*.orig
+
+# Archivos específicos de la aplicación
+cache/
+temp/
+.tmp/
