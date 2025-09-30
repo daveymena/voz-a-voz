@@ -1,0 +1,21 @@
+# Requirements específicos para despliegue en Vercel
+gradio>=4.0.0
+openai-whisper>=20231117
+SpeechRecognition>=3.10.0
+googletrans==4.0.0rc1
+gTTS>=2.4.0
+pygame>=2.5.0
+numpy>=1.24.0
+torch>=2.0.0
+torchaudio>=2.0.0
+pydub>=0.25.1
+
+# Dependencias adicionales necesarias
+soundfile>=0.12.1
+scipy>=1.11.0
+python-multipart>=0.0.6
+librosa>=0.10.0
+
+# Excluir paquetes que pueden causar problemas en serverless
+# pyttsx3 - No funciona bien en entornos serverless
+# Algunos paquetes de audio que requieren hardware específico

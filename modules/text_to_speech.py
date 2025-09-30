@@ -100,6 +100,7 @@ class TextToSpeech:
     def text_to_speech_pyttsx3(self, text: str, lang: str = 'es', voice_id: int = 0) -> Optional[bytes]:
         """
         Convertir texto a voz usando pyttsx3 (offline).
+        Nota: No funciona en entornos serverless como Vercel.
 
         Args:
             text (str): Texto a convertir
@@ -109,42 +110,9 @@ class TextToSpeech:
         Returns:
             bytes: Datos de audio WAV o None si hay error
         """
-        if not text or not text.strip():
-            logger.warning("Texto vacío recibido para síntesis")
-            return None
-
-        if not self.tts_engine:
-            logger.error("Motor pyttsx3 no disponible")
-            return None
-
-        try:
-            logger.info(f"Generando audio con pyttsx3 para idioma {lang}: {text[:50]}...")
-
-            # Configurar voz
-            voices = self.tts_engine.getProperty('voices')
-            if voice_id < len(voices):
-                self.tts_engine.setProperty('voice', voices[voice_id].id)
-
-            # Crear archivo temporal para guardar el audio
-            temp_file = os.path.join(self.temp_dir, f'pyttsx3_{int(time.time())}.wav')
-
-            # Generar audio
-            self.tts_engine.save_to_file(text, temp_file)
-            self.tts_engine.runAndWait()
-
-            # Leer archivo y convertir a bytes
-            with open(temp_file, 'rb') as audio_file:
-                audio_data = audio_file.read()
-
-            # Eliminar archivo temporal
-            os.remove(temp_file)
-
-            logger.info(f"Audio generado exitosamente: {len(audio_data)} bytes")
-            return audio_data
-
-        except Exception as e:
-            logger.error(f"Error con pyttsx3: {e}")
-            return None
+        logger.warning("pyttsx3 no es compatible con entornos serverless como Vercel")
+        logger.info("Usando gTTS como alternativa...")
+        return self.text_to_speech_gtts(text, lang)
 
     def text_to_speech(self, text: str, lang: str = 'es', engine: str = 'gtts', slow: bool = False) -> Optional[bytes]:
         """

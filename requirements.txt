@@ -4,7 +4,7 @@ openai-whisper>=20231117
 SpeechRecognition>=3.10.0
 googletrans==4.0.0rc1
 gTTS>=2.4.0
-pyttsx3>=2.90
+# pyttsx3>=2.90  # Comentado para despliegue en Vercel (no compatible con serverless)
 pygame>=2.5.0
 numpy>=1.24.0
 torch>=2.0.0
@@ -18,3 +18,5 @@ python-multipart>=0.0.6
 
 # Para manejo de archivos de audio
 librosa>=0.10.0
+
+# Nota: Para despliegue en Vercel, usa requirements-vercel.txt
