@@ -61,7 +61,7 @@ class SpeechRecognizer:
         try:
             logger.info(f"Iniciando grabación de {duration} segundos en idioma {language}")
 
-            # Mejorar manejo de dispositivos de audio
+            # Verificar dispositivos de audio disponibles
             microphones = sr.Microphone.list_microphone_names()
             if not microphones:
                 logger.error("No se encontraron micrófonos")
@@ -69,34 +69,42 @@ class SpeechRecognizer:
 
             logger.info(f"Micrófonos disponibles: {microphones}")
 
-            with sr.Microphone() as source:
-                # Ajustar para ruido ambiental con manejo de errores
-                try:
-                    self.recognizer.adjust_for_ambient_noise(source, duration=1)
-                except Exception as e:
-                    logger.warning(f"No se pudo ajustar ruido ambiental: {e}")
+            # Usar el primer micrófono disponible
+            try:
+                with sr.Microphone(device_index=0) as source:
+                    logger.info("Usando micrófono por defecto (índice 0)")
 
-                # Grabar audio con mejor manejo de errores
-                try:
-                    audio = self.recognizer.listen(source, timeout=duration, phrase_time_limit=duration)
-                except sr.WaitTimeoutError:
-                    logger.error("Tiempo de espera agotado - no se detectó audio")
-                    return None
-                except Exception as e:
-                    logger.error(f"Error durante la grabación: {e}")
-                    return None
+                    # Ajustar para ruido ambiental con manejo de errores
+                    try:
+                        self.recognizer.adjust_for_ambient_noise(source, duration=1)
+                    except Exception as e:
+                        logger.warning(f"No se pudo ajustar ruido ambiental: {e}")
 
-                logger.info("Procesando audio...")
+                    # Grabar audio con mejor manejo de errores
+                    try:
+                        audio = self.recognizer.listen(source, timeout=duration, phrase_time_limit=duration)
+                    except sr.WaitTimeoutError:
+                        logger.error("Tiempo de espera agotado - no se detectó audio")
+                        return None
+                    except Exception as e:
+                        logger.error(f"Error durante la grabación: {e}")
+                        return None
 
-                # Intentar reconocimiento con diferentes métodos
-                text = self._recognize_audio(audio, language)
+                    logger.info("Procesando audio...")
 
-                if text:
-                    logger.info(f"Texto reconocido: {text}")
-                    return text.strip()
-                else:
-                    logger.warning("No se pudo reconocer el audio")
-                    return None
+                    # Intentar reconocimiento con diferentes métodos
+                    text = self._recognize_audio(audio, language)
+
+                    if text:
+                        logger.info(f"Texto reconocido: {text}")
+                        return text.strip()
+                    else:
+                        logger.warning("No se pudo reconocer el audio")
+                        return None
+
+            except Exception as mic_error:
+                logger.error(f"Error accediendo al micrófono: {mic_error}")
+                return None
 
         except Exception as e:
             logger.error(f"Error inesperado en grabación: {e}")
@@ -133,8 +141,13 @@ class SpeechRecognizer:
                 audio_data = np.frombuffer(audio.get_raw_data(), np.int16)
                 audio_float = audio_data.astype(np.float32) / 32768.0
 
+                # Corregir código de idioma para Whisper (solo códigos ISO)
+                whisper_lang = self._normalize_language_code(language)
+
+                logger.info(f"Usando Whisper con idioma: {whisper_lang}")
+
                 # Transcribir con Whisper
-                result = self.whisper_model.transcribe(audio_float, language=language)
+                result = self.whisper_model.transcribe(audio_float, language=whisper_lang)
                 return result["text"]
             except Exception as e:
                 logger.warning(f"Error con Whisper: {e}")
@@ -154,6 +167,43 @@ class SpeechRecognizer:
             logger.warning(f"Error con Sphinx: {e}")
 
         return None
+
+    def _normalize_language_code(self, language: str) -> str:
+        """
+        Normalizar código de idioma para diferentes servicios.
+
+        Args:
+            language: Código o nombre del idioma
+
+        Returns:
+            str: Código normalizado
+        """
+        # Mapeo de nombres completos a códigos
+        language_map = {
+            'español': 'es',
+            'english': 'en',
+            'français': 'fr',
+            'deutsch': 'de',
+            'italiano': 'it',
+            'português': 'pt',
+            'русский': 'ru',
+            '日本語': 'ja',
+            '한국어': 'ko',
+            '中文': 'zh',
+            'العربية': 'ar',
+            'हिन्दी': 'hi'
+        }
+
+        # Si es un nombre completo, convertir a código
+        if language.lower() in language_map:
+            return language_map[language.lower()]
+
+        # Si ya es un código válido, devolverlo
+        if len(language) == 2:
+            return language.lower()
+
+        # Fallback por defecto
+        return 'es'
 
     def get_supported_languages(self) -> Dict[str, str]:
         """
