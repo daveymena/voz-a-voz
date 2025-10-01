@@ -1,23 +1,29 @@
-# Excluir archivos innecesarios para el despliegue de api.py (VERSIÓN API)
+# Excluir SOLO archivos innecesarios para despliegue en Vercel
 .git
 .gitignore
-README.md
+
+# Excluir archivos de desarrollo local que no funcionan en serverless
+test_microphone.py
+quick_start.py
+config.py
 start.py
+
+# Excluir versiones alternativas (mantener solo la que usa vercel.json)
 app.py
 app_simple.py
 app_vercel.py
 app_lite.py
 app_minimal.py
-test_microphone.py
-quick_start.py
-config.py
+api.py
+
+# Excluir archivos de requirements alternativos
 requirements.txt
 requirements-vercel.txt
 requirements-lite.txt
 requirements-minimal.txt
 
-# Excluir módulos que requieren hardware de audio (no funcionan en serverless)
-modules/
+# Excluir módulos que requieren hardware de audio
+modules/speech_recognition.py
 
 # Excluir archivos de desarrollo y logs
 *.pyc
@@ -25,4 +31,8 @@ __pycache__/
 *.log
 .env
 
-# Solo mantener los archivos esenciales para la API
+# ✅ MANTENER archivos esenciales:
+# - vercel_app.py (aplicación principal)
+# - README.md (documentación)
+# - modules/translator.py (traducciones)
+# - modules/text_to_speech.py (síntesis de voz)

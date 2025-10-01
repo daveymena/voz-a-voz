@@ -1,9 +1,10 @@
-# Requirements optimizados para app_vercel.py en Vercel
+# Requirements específicos para vercel_app.py en Vercel
+# Solo dependencias esenciales para evitar problemas de memoria
+
 gradio>=4.0.0
 googletrans==4.0.0rc1
 gTTS>=2.4.0
 requests>=2.31.0
 
-# Dependencias mínimas para funcionamiento básico en Vercel
-# NO INCLUIR: SpeechRecognition, pygame, pyttsx3, openai-whisper
-# Estas librerías requieren hardware de audio no disponible en serverless
+# Dependencias mínimas necesarias para el funcionamiento básico
+# Sin librerías que requieran hardware de audio o procesamiento pesado
