@@ -1,0 +1,4 @@
+# REQUIREMENTS MINIMALISTAS ABSOLUTOS
+# Solo Gradio - nada más
+
+gradio>=4.0.0

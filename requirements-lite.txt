@@ -1,0 +1,10 @@
+# Requirements ULTRA LIGEROS para app_lite.py en Vercel
+# Solo las dependencias ABSOLUTAMENTE necesarias para evitar errores de memoria
+
+gradio>=4.0.0
+requests>=2.31.0
+
+# ¡ESO ES TODO!
+# Sin googletrans, sin gTTS, sin SpeechRecognition, sin pygame, sin pyttsx3
+# Sin módulos personalizados complejos
+# Solo lo esencial para funcionar en Vercel sin problemas de memoria

@@ -64,6 +64,43 @@ Una aplicación web moderna y responsive que permite convertir voz entre múltip
    python -c "import gradio, speech_recognition, googletrans, gtts; print('✅ Todas las dependencias instaladas correctamente')"
    ```
 
+### 🚀 Despliegue en Vercel (Opcional)
+
+Para desplegar la aplicación en Vercel con soporte web completo:
+
+1. **Crear cuenta en Vercel** (si no tienes una)
+   - Ve a [vercel.com](https://vercel.com) y regístrate
+
+2. **Instalar Vercel CLI**
+   ```bash
+   npm install -g vercel
+   ```
+
+3. **Configurar proyecto para Vercel**
+   ```bash
+   # Usar la versión ultra-ligera optimizada para Vercel
+   vercel --prod
+   ```
+
+4. **Variables de entorno (opcional)**
+   ```bash
+   # Agregar si necesitas configuración específica
+   vercel env add PYTHON_VERSION
+   ```
+
+### 📋 Versiones Disponibles para Vercel:
+
+| Versión | Archivo | Características | Uso de Memoria | Estado |
+|---------|---------|----------------|----------------|---------|
+| 🔥 **API ESPECÍFICA** | `api.py` | ✅ **Sin métodos launch()**<br>✅ Aplicación como variable global<br>✅ Máxima compatibilidad Vercel | ⭐⭐⭐⭐⭐ (Ultra Baja) | **RECOMENDADA** |
+| **Ultra-Ligera** | `app_lite.py` | ✅ Traducción y TTS básica<br>✅ Sin módulos externos<br>✅ Muy estable | ⭐⭐⭐⭐⭐ (Muy Baja) | ✅ Funcional |
+| **Optimizada** | `app_vercel.py` | ✅ Traducción completa<br>✅ Módulos personalizados<br>✅ Más funcionalidades | ⭐⭐⭐ (Media) | ⚠️ Puede fallar |
+| **Completa** | `app_simple.py` | ✅ Todas las características<br>❌ Puede tener problemas de memoria | ⭐⭐ (Alta) | ❌ No recomendada |
+
+**🎯 Recomendación**: Usa `api.py` para despliegue en Vercel. Es la más estable y está específicamente diseñada para serverless.
+
+**Nota**: Las versiones de Vercel funcionan únicamente con traducción de texto debido a las limitaciones de entornos serverless.
+
 ## 🎯 Uso
 
 ### Inicio Rápido
@@ -185,9 +222,17 @@ logging.basicConfig(level=logging.DEBUG)
 ```
 convertidor-de-audios-a-idiomas/
 │
-├── 📄 app.py                    # Aplicación principal con interfaz Gradio
-├── 📄 requirements.txt          # Dependencias del proyecto
-├── 📄 README.md                # Esta documentación
+├── 📄 app.py                    # Aplicación principal completa
+├── 📄 app_simple.py             # Versión simplificada para web
+├── 📄 app_vercel.py             # Versión optimizada para Vercel
+├── 📄 app_lite.py               # Versión ULTRA LIGERA para Vercel (sin memoria issues)
+├── 📄 app_minimal.py            # Versión minimalista para pruebas
+├── 📄 api.py                    # **VERSIÓN API ESPECÍFICA PARA VERCEL** ⭐
+├── 📄 requirements.txt          # Dependencias completas
+├── 📄 requirements-vercel.txt   # Dependencias para Vercel
+├── 📄 vercel.json               # Configuración de despliegue Vercel
+├── 📄 .vercelignore             # Archivos a excluir en Vercel
+├── 📄 README.md                 # Esta documentación
 │
 ├── 📁 modules/                  # Módulos funcionales
 │   ├── speech_recognition.py    # Reconocimiento de voz (STT)

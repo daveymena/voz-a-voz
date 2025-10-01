@@ -1,0 +1,28 @@
+# Excluir archivos innecesarios para el despliegue de api.py (VERSIÓN API)
+.git
+.gitignore
+README.md
+start.py
+app.py
+app_simple.py
+app_vercel.py
+app_lite.py
+app_minimal.py
+test_microphone.py
+quick_start.py
+config.py
+requirements.txt
+requirements-vercel.txt
+requirements-lite.txt
+requirements-minimal.txt
+
+# Excluir módulos que requieren hardware de audio (no funcionan en serverless)
+modules/
+
+# Excluir archivos de desarrollo y logs
+*.pyc
+__pycache__/
+*.log
+.env
+
+# Solo mantener los archivos esenciales para la API

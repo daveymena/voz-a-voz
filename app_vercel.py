@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Versión simplificada del Convertidor de Voz a Voz
-Optimizada para despliegue en Vercel y entornos con restricciones
+Versión específica para despliegue en Vercel
+Optimizada para entornos serverless sin dispositivos de audio
 """
 
 import gradio as gr
 import logging
-import speech_recognition as sr
+import base64
+import io
 from modules.translator import TextTranslator
 from modules.text_to_speech import TextToSpeech
 
@@ -14,13 +15,13 @@ from modules.text_to_speech import TextToSpeech
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class SimpleVoiceTranslator:
+class VercelVoiceTranslator:
     """
-    Versión simplificada del convertidor de voz a voz.
+    Versión optimizada para Vercel sin dependencias de audio local.
     """
 
     def __init__(self):
-        """Inicializar la aplicación simplificada."""
+        """Inicializar la aplicación para Vercel."""
         self.translator = TextTranslator()
         self.tts_engine = TextToSpeech()
 
@@ -30,15 +31,15 @@ class SimpleVoiceTranslator:
 
     def create_interface(self) -> gr.Blocks:
         """
-        Crear interfaz simplificada.
+        Crear interfaz optimizada para Vercel.
 
         Returns:
             gr.Blocks: Interfaz de usuario
         """
-        # CSS simplificado
-        simple_css = """
+        # CSS optimizado para Vercel
+        vercel_css = """
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: auto;
             padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -81,16 +82,46 @@ class SimpleVoiceTranslator:
             min-height: 100px;
             border: 2px solid #e0e0e0;
         }
+
+        .info-box {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #1565c0;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2em;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+        }
         """
 
         with gr.Blocks(
-            title="Convertidor de Voz a Voz",
+            title="Convertidor de Voz a Voz - Vercel",
             theme=gr.themes.Soft(),
-            css=simple_css
+            css=vercel_css
         ) as interface:
 
             # Título
             gr.HTML("<div class='container'><h1 class='title'>🌐 Convertidor de Voz a Voz</h1></div>")
+
+            # Información sobre versión Vercel
+            with gr.Row():
+                gr.HTML("""
+                <div class='info-box'>
+                    <h3>🚀 Versión Optimizada para Vercel</h3>
+                    <p>Esta versión está diseñada específicamente para funcionar en entornos serverless como Vercel.
+                    Puedes escribir texto directamente o usar la función de traducción de texto.</p>
+                    <p><strong>Nota:</strong> Para funciones avanzadas de reconocimiento de voz, ejecuta la aplicación localmente.</p>
+                </div>
+                """)
 
             with gr.Row():
                 with gr.Column():
@@ -120,25 +151,6 @@ class SimpleVoiceTranslator:
                             lines=4
                         )
 
-                        # Componente para subir archivo de audio
-                        audio_input = gr.Audio(
-                            label="Subir archivo de audio",
-                            type="filepath"
-                        )
-
-                        # Botón para grabar audio y convertir a texto
-                        record_btn = gr.Button(
-                            "🎤 Grabar Audio",
-                            elem_classes="button"
-                        )
-
-                        # Área para mostrar texto reconocido desde audio
-                        recognized_text = gr.Textbox(
-                            label="Texto reconocido",
-                            lines=4,
-                            interactive=False
-                        )
-
                         # Botón de traducción
                         translate_btn = gr.Button(
                             "🌍 Traducir Texto",
@@ -165,42 +177,34 @@ class SimpleVoiceTranslator:
 
                         # Información de estado
                         status_info = gr.HTML(
-                            value="<div style='text-align: center; margin-top: 20px;'>👋 ¡Habla y presiona 'Grabar Audio' para traducir!</div>"
+                            value="<div style='text-align: center; margin-top: 20px;'>👋 ¡Escribe tu texto y presiona 'Traducir Texto'!</div>"
                         )
 
             # Área de instrucciones
             with gr.Accordion("📖 Cómo usar", open=False):
                 gr.Markdown("""
-                ### 🎯 Instrucciones simples:
+                ### 🎯 Instrucciones para versión Vercel:
 
                 1. **Selecciona los idiomas** de origen y destino
-                2. **Presiona "🎤 Grabar Audio"** y habla en el idioma de origen
-                3. La aplicación traducirá y mostrará el texto reconocido y traducido
+                2. **Escribe el texto** que quieres traducir en el área de texto
+                3. **Presiona "🌍 Traducir Texto"** para obtener la traducción
                 4. **Usa "🔊 Reproducir Audio"** para escuchar la traducción
 
                 ### 🌍 Idiomas soportados:
                 - Español, English, Français, Deutsch, Italiano, Português
 
                 ### ⚡ Características:
-                - Traducción automática de voz a texto
+                - Traducción automática de texto
                 - Síntesis de voz en el idioma destino
                 - Interfaz web clara y ordenada
-                - Funciona en cualquier dispositivo
+                - Optimizado para dispositivos móviles y desktop
+                - Despliegue gratuito en Vercel
+
+                ### 🚀 Despliegue:
+                Esta aplicación está optimizada para desplegarse en Vercel sin costo adicional.
                 """)
 
             # Eventos
-            audio_input.change(
-                fn=self._process_audio_file,
-                inputs=[audio_input, source_lang, target_lang],
-                outputs=[input_text, translated_text, status_info]
-            )
-
-            record_btn.click(
-                fn=self._record_and_recognize,
-                inputs=[source_lang, target_lang],
-                outputs=[input_text, translated_text, status_info]
-            )
-
             translate_btn.click(
                 fn=self.translate_text,
                 inputs=[input_text, source_lang, target_lang],
@@ -291,120 +295,6 @@ class SimpleVoiceTranslator:
             logger.error(f"Error reproduciendo audio: {e}")
             return f"<div style='text-align: center; color: #d32f2f;'>❌ Error: {e}</div>"
 
-    def _process_audio_file(self, audio_file, source_lang: str, target_lang: str) -> tuple:
-        """
-        Procesar archivo de audio subido y traducirlo.
-
-        Args:
-            audio_file: Archivo de audio subido
-            source_lang: Idioma de origen
-            target_lang: Idioma de destino
-
-        Returns:
-            tuple: Texto reconocido, texto traducido y mensaje de estado
-        """
-        if not audio_file:
-            return "", "", "<div style='text-align: center; color: #d32f2f;'>❌ No se recibió archivo de audio</div>"
-
-        try:
-            # Procesar el archivo de audio
-            status = "<div style='text-align: center; color: #2196f3;'>🔄 Procesando audio...</div>"
-
-            # Reconocer el audio usando SpeechRecognition
-            recognizer = sr.Recognizer()
-            source_code = self._get_language_code(source_lang)
-
-            # Cargar el archivo de audio
-            with sr.AudioFile(audio_file) as source:
-                # Ajustar para ruido si es posible
-                try:
-                    recognizer.adjust_for_ambient_noise(source, duration=0.5)
-                except:
-                    pass  # Ignorar si no se puede ajustar
-
-                # Grabar el audio del archivo
-                audio = recognizer.record(source)
-
-            # Intentar reconocer el texto
-            try:
-                recognized_text = recognizer.recognize_google(audio, language=source_code)
-                logger.info(f"Texto reconocido: {recognized_text}")
-            except sr.UnknownValueError:
-                return "", "", "<div style='text-align: center; color: #d32f2f;'>❌ No se pudo reconocer el audio. Intenta hablar más claro.</div>"
-            except sr.RequestError as e:
-                return "", "", f"<div style='text-align: center; color: #d32f2f;'>❌ Error de conexión: {e}</div>"
-
-            if not recognized_text or len(recognized_text.strip()) < 2:
-                return "", "", "<div style='text-align: center; color: #d32f2f;'>❌ El audio no contiene texto reconocible</div>"
-
-            # Traducir automáticamente
-            target_code = self._get_language_code(target_lang)
-            translated_text = self.translator.translate_text(recognized_text, source_code, target_code)
-
-            if translated_text:
-                status = f"<div style='text-align: center; color: #2e7d32;'>✅ Audio procesado y traducido: {source_lang} → {target_lang}</div>"
-                return recognized_text, translated_text, status
-            else:
-                status = "<div style='text-align: center; color: #d32f2f;'>❌ Error en la traducción del audio</div>"
-                return recognized_text, "", status
-
-        except Exception as e:
-            logger.error(f"Error procesando audio: {e}")
-            return "", "", f"<div style='text-align: center; color: #d32f2f;'>❌ Error procesando audio: {e}</div>"
-
-    def _record_and_recognize(self, source_lang: str, target_lang: str) -> tuple:
-        """
-        Grabar audio del micrófono y reconocerlo automáticamente.
-
-        Args:
-            source_lang: Idioma de origen
-            target_lang: Idioma de destino
-
-        Returns:
-            tuple: Texto reconocido, texto traducido y mensaje de estado
-        """
-        try:
-            # Inicializar reconocedor
-            recognizer = sr.Recognizer()
-            source_code = self._get_language_code(source_lang)
-
-            # Configurar el micrófono
-            with sr.Microphone(device_index=0) as source:
-                status = "<div style='text-align: center; color: #2196f3;'>🎤 Escuchando... Habla ahora</div>"
-
-                # Ajustar para ruido ambiente
-                recognizer.adjust_for_ambient_noise(source, duration=1)
-
-                # Grabar audio
-                audio = recognizer.listen(source, timeout=5, phrase_time_limit=10)
-
-            # Reconocer el audio
-            try:
-                recognized_text = recognizer.recognize_google(audio, language=source_code)
-                logger.info(f"Texto reconocido: {recognized_text}")
-            except sr.UnknownValueError:
-                return "", "", "<div style='text-align: center; color: #d32f2f;'>❌ No se pudo reconocer el audio. Intenta hablar más claro.</div>"
-            except sr.RequestError as e:
-                return "", "", f"<div style='text-align: center; color: #d32f2f;'>❌ Error de conexión: {e}</div>"
-
-            if not recognized_text or len(recognized_text.strip()) < 2:
-                return "", "", "<div style='text-align: center; color: #d32f2f;'>❌ El audio no contiene texto reconocible</div>"
-
-            # Traducir automáticamente
-            target_code = self._get_language_code(target_lang)
-            translated_text = self.translator.translate_text(recognized_text, source_code, target_code)
-
-            if translated_text:
-                status = f"<div style='text-align: center; color: #2e7d32;'>✅ Audio grabado y traducido: {source_lang} → {target_lang}</div>"
-                return recognized_text, translated_text, status
-            else:
-                status = "<div style='text-align: center; color: #d32f2f;'>❌ Error en la traducción del audio grabado</div>"
-                return recognized_text, "", status
-
-        except Exception as e:
-            logger.error(f"Error grabando audio: {e}")
-            return "", "", f"<div style='text-align: center; color: #d32f2f;'>❌ Error grabando audio: {e}</div>"
-
     def _get_language_code(self, language_name: str) -> str:
         """
         Convertir nombre de idioma a código.
@@ -428,14 +318,14 @@ class SimpleVoiceTranslator:
     def launch(self, **kwargs):
         """Lanzar la aplicación."""
         interface = self.create_interface()
-        logger.info("🚀 Iniciando Convertidor de Voz a Voz (versión simplificada)...")
+        logger.info("🚀 Iniciando Convertidor de Voz a Voz (versión Vercel)...")
         interface.launch(**kwargs)
 
 # Función principal
 def main():
     """Función principal."""
-    app = SimpleVoiceTranslator()
-    app.launch(share=True)
+    app = VercelVoiceTranslator()
+    app.launch(share=False)  # No compartir públicamente en Vercel
 
 if __name__ == "__main__":
     main()

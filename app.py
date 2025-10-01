@@ -8,7 +8,7 @@ import time
 import threading
 import logging
 import queue
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Dict
 import os
 import speech_recognition as sr
 import numpy as np
